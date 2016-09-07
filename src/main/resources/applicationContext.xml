@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
@@ -14,6 +14,8 @@
 	">
 
     <context:component-scan base-package="com.stefli"/>
+    <!-- 开启切面代理 使得spring认识 @Aspect -->
+    <aop:aspectj-autoproxy/>
 
     <bean id="propertyConfigurer"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -61,23 +63,8 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <tx:advice id="txAdvice" transaction-manager="transactionManager">
-        <tx:attributes>
-            <tx:method name="*" propagation="REQUIRED"/>
-            <tx:method name="find*" read-only="true"/>
-        </tx:attributes>
-    </tx:advice>
-
-    <bean id="dsAdvice" class="com.stefli.db.core.DataSourceAdvice"/>
-
-    <aop:config>
-        <aop:pointcut expression="execution (* com.stefli.db.service.*.*(..))"
-                      id="services"/>
-        <aop:advisor advice-ref="dsAdvice" pointcut-ref="services"
-                     order="10"/>
-        <aop:advisor advice-ref="txAdvice" pointcut-ref="services"
-                     order="20"/>
-    </aop:config>
+    <!--注入 事务管理器  这个注解驱动 告诉 spring 注解驱动 具体上网搜索  -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
 
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>

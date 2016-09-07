@@ -8,26 +8,31 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import com.stefli.db.service.IPersonService;
 
 public class Main {
+    private static ApplicationContext ctx;
 
-	@SuppressWarnings("resource")
-	public static void main(String args[]) throws SQLException,
-			NoSuchFieldException, SecurityException, IllegalArgumentException,
-			IllegalAccessException {
-		ApplicationContext ctx = new ClassPathXmlApplicationContext(
-				"applicationContext.xml");
-		IPersonService service = (IPersonService) ctx.getBean("personService");
-		int len = 10;
-		for (int i = 0; i < len; i++) {
-			System.out.println(service.findAll());
-			String name = "stefli-" + i;
-			service.createPerson(name);
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		System.out.println(service.findAll());
-	}
+
+    @SuppressWarnings("resource")
+    public static void main(String args[]) throws SQLException,
+            NoSuchFieldException, SecurityException, IllegalArgumentException,
+            IllegalAccessException {
+        ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
+        IPersonService service = (IPersonService) ctx.getBean("personService");
+        int len = 10;
+        for (int i = 0; i < len; i++) {
+            System.out.println(service.findAll());
+            String name = "stefli-" + i;
+            service.createPerson(name);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(service.findAll());
+    }
+
+    public static ApplicationContext springApplicationContext() {
+        return ctx;
+    }
 
 }
